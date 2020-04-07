@@ -13,9 +13,10 @@
   </div>
   <div class="list">
     <mat-list color="primary">
-      <mat-list-item checkboxPosition="after" *ngFor="let message of messages$ | async">
+      <mat-list-item *ngFor="let message of messages$ | async">
         <div mat-line>
-          <mat-checkbox (change)="toggle($event)" [checked]="message.completed"></mat-checkbox>
+<!--  [checked]="message.completed"  [(ngModel)]="message.completed"-->
+          <mat-checkbox [checked]="message.completed" (change)="toggle($event,message)"></mat-checkbox>
           <span class="text">{{message.message}}</span></div>
         <button mat-icon-button>
           <mat-icon (click)="delete(message)" mat-list-icon>cancel</mat-icon>

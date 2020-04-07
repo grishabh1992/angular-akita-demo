@@ -18,6 +18,16 @@ export class MessageService {
     this.messageStore.add(message);
   }
 
+  delete(message: Message) {
+    this.messageStore.remove(message.id);
+  }
+
+  update(message: Message) {
+    const messagePayload = JSON.parse(JSON.stringify(message));
+    delete messagePayload.id;
+    this.messageStore.update(message.id, messagePayload);
+  }
+
   getMessages(): Observable<any> {
     this.messageStore.setLoading(true);
     return this.httpClient.get('assets/messages.json').pipe(

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MessageService } from './state/message/message.service';
 import { Message } from './state/message/message.model';
 import { MessageQuery } from './state/message/message.query';
+import { MatCheckboxChange } from '@angular/material';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,8 @@ export class AppComponent implements OnInit {
   messageText = '';
   messages = [];
   messages$;
-  constructor(private messageService: MessageService,
+  constructor(
+    private messageService: MessageService,
     private messageQuery: MessageQuery) { }
   async ngOnInit(): Promise<void> {
     this.messageService.getMessages().subscribe((data) => {
@@ -32,12 +34,12 @@ export class AppComponent implements OnInit {
     this.messageText = '';
   }
 
-  toggle(e) {
-
+  toggle(evt: MatCheckboxChange, message: Message) {
+    this.messageService.update({ ...message, ...{ completed: evt.checked } });
   }
 
   delete(message: Message) {
-
+    this.messageService.delete(message);
   }
 
   guid() {
@@ -46,6 +48,6 @@ export class AppComponent implements OnInit {
         .toString(16)
         .substring(1);
     }
-    return s4() + s4() + '-' + s4();
+    return s4() + s4();
   }
 }
