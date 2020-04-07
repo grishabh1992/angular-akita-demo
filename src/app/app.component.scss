@@ -1,0 +1,28 @@
+.message-container {
+  width: 100%;
+  padding: 0px 24px;
+  .header {
+    font-size: 24px;
+    font-weight: 600;
+    padding: 24px;
+    padding-left: 32px;
+  }
+  .input-field {
+    margin: 16px 0px;
+    .message {
+      padding-left: 32px;
+      .mat-form-field {
+        width: 100%;
+      }
+    }
+    .action {
+      text-align: right;
+      padding-right: 16px
+    }
+  }
+  .list {
+    .text {
+      padding-left: 16px;
+    }
+  }
+}
