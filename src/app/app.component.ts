@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessageService } from './state/message/message.service';
 import { Message } from './state/message/message.model';
 import { MessageQuery } from './state/message/message.query';
 import { MatCheckboxChange } from '@angular/material';
+import { filter, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -11,23 +12,38 @@ import { MatCheckboxChange } from '@angular/material';
 })
 export class AppComponent implements OnInit {
   messageText = '';
-  messages = [];
   messages$;
+  showCompleted = false;
+  isAuto = false;
   constructor(
     private messageService: MessageService,
     private messageQuery: MessageQuery) { }
   async ngOnInit(): Promise<void> {
-    this.messageService.getMessages().subscribe((data) => {
-      this.messages = data;
-    });
-
+    await this.messageService.initMessages().toPromise();
     this.messages$ = this.messageQuery.selectAll();
+  }
+
+  autoRefresh() {
+    this.isAuto = !this.isAuto;
+    if (!this.isAuto) {
+      this.messageService.subscription.unsubscribe();
+    }
+    this.messageService.autoRefresh();
+  }
+
+  completedMessage() {
+    this.showCompleted = !this.showCompleted;
+    this.messages$ = this.messageQuery.selectAll({
+      filterBy: [
+        entity => entity.completed === this.showCompleted
+      ]
+    });
   }
 
   save() {
     const message: Message = {
       message: this.messageText,
-      id: this.guid(),
+      id: this.messageService.guid(),
       completed: false
     };
     this.messageService.add(message);
@@ -41,13 +57,11 @@ export class AppComponent implements OnInit {
   delete(message: Message) {
     this.messageService.delete(message);
   }
-
-  guid() {
-    function s4() {
-      return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1);
-    }
-    return s4() + s4();
+  reset() {
+    this.isAuto = false;
+    this.showCompleted = false;
+    this.messages$ = this.messageQuery.selectAll();
   }
+
+
 }

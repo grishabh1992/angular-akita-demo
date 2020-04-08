@@ -1,5 +1,14 @@
 <div class="message-container" fxLayout="column" fxLayoutAlign="center stretch">
   <div class="header">Messages</div>
+  <div>
+    <mat-chip-list aria-label="Fish selection">
+      <mat-chip color="primary" *ngIf="showCompleted" selected (click)="completedMessage()">Completed</mat-chip>
+      <mat-chip color="primary" *ngIf="isAuto" selected (click)="autoRefresh()">Stop Auto Refresh</mat-chip>
+      <mat-chip color="primary" *ngIf="!showCompleted" (click)="completedMessage()">Pending</mat-chip>
+      <mat-chip color="primary" *ngIf="!isAuto" (click)="autoRefresh()">Start Auto Refresh</mat-chip>
+      <mat-chip color="primary" *ngIf="showCompleted && isAuto" (click)="reset()">Reset</mat-chip>
+    </mat-chip-list>
+  </div>
   <div fxLayout="row" fxLayoutAlign="center center" class="input-field">
     <div fxFlex class="message">
       <mat-form-field>
@@ -9,15 +18,14 @@
     <div fxFlex="20" class="action">
       <button (click)="save()" mat-raised-button color="primary">Save</button>
     </div>
-
   </div>
   <div class="list">
     <mat-list color="primary">
       <mat-list-item *ngFor="let message of messages$ | async">
         <div mat-line>
-<!--  [checked]="message.completed"  [(ngModel)]="message.completed"-->
           <mat-checkbox [checked]="message.completed" (change)="toggle($event,message)"></mat-checkbox>
-          <span class="text">{{message.message}}</span></div>
+          <span class="text">{{message.message}}</span>
+        </div>
         <button mat-icon-button>
           <mat-icon (click)="delete(message)" mat-list-icon>cancel</mat-icon>
         </button>

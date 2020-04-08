@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { MessageStore } from './message.store';
 import { Message } from './message.model';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, Subscription, interval } from 'rxjs';
+import { tap, flatMap, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageService {
-
+  subscription: Subscription;
   constructor(
     private messageStore: MessageStore,
     private httpClient: HttpClient) { }
@@ -28,7 +28,7 @@ export class MessageService {
     this.messageStore.update(message.id, messagePayload);
   }
 
-  getMessages(): Observable<any> {
+  initMessages(): Observable<any> {
     this.messageStore.setLoading(true);
     return this.httpClient.get('assets/messages.json').pipe(
       tap(
@@ -41,6 +41,29 @@ export class MessageService {
           this.messageStore.setLoading(false);
         }
       ));
+  }
+
+  autoRefresh() {
+    this.subscription = interval(5 * 1000)
+      .pipe(
+        map((data) => {
+          this.messageStore.add({
+            id: this.guid(),
+            message: `Random Message ${this.guid()}`,
+            completed: false
+          });
+          return data;
+        })
+      ).subscribe();
+  }
+
+  guid() {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+    }
+    return s4() + s4();
   }
 
 }
